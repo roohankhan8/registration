@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.models import User
+
 # Create your views here.
 
 @login_required(login_url='login')
@@ -41,3 +43,15 @@ def LoginPage(request):
 def LogoutPage(request):
     logout(request)
     return redirect('login')
+
+def check_email_exists(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        user_exists = User.objects.filter(email=email).exists()
+
+        if user_exists:
+            return redirect('reset_password')
+        else:
+            return HttpResponse("Email does not exist!")
+    return render(request, 'check_email_exists.html')
